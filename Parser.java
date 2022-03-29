@@ -1,12 +1,13 @@
 import java.text.ParseException;
+import java.text.StringCharacterIterator;
+import java.text.CharacterIterator;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Parser {
     static String input;
-    static char l;
-    static int index = 0;
+    static CharacterIterator it;
     static List<Character> nums = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
     public static void main(String[] args) throws ParseException {
@@ -14,14 +15,14 @@ public class Parser {
         try (Scanner scanner = new Scanner(System.in)) {
             input = scanner.nextLine();
         }
-        l = input.charAt(index);
+        it = new StringCharacterIterator(input);
         exp();
         end();
         System.out.println("Out: " + input);
     }
 
     static void exp() throws ParseException {
-        if (nums.contains(l) || l == '(') {
+        if (nums.contains(it.current()) || it.current() == '(') {
             term();
             exp2();
         } else
@@ -29,7 +30,7 @@ public class Parser {
     }
 
     static void exp2() throws ParseException {
-        if (l == '^') {
+        if (it.current() == '^') {
             match('^');
             term();
             exp2();
@@ -37,7 +38,7 @@ public class Parser {
     }
 
     static void term() throws ParseException {
-        if (nums.contains(l) || l == '(') {
+        if (nums.contains(it.current()) || it.current() == '(') {
             exp3();
             term2();
         } else
@@ -45,7 +46,7 @@ public class Parser {
     }
 
     static void term2() throws ParseException {
-        if (l == '&') {
+        if (it.current() == '&') {
             match('&');
             exp3();
             term2();
@@ -53,36 +54,36 @@ public class Parser {
     }
 
     static void exp3() throws ParseException {
-        if (l == '(') {
+        if (it.current() == '(') {
             match('(');
             exp();
             match(')');
-        } else if (nums.contains(l))
+        } else if (nums.contains(it.current()))
             num();
         else
             throw new ParseException("Syntax error", 0);
     }
 
     static void num() throws ParseException {
-        if (l == '0')
+        if (it.current() == '0')
             match('0');
-        else if (l == '1')
+        else if (it.current() == '1')
             match('1');
-        else if (l == '2')
+        else if (it.current() == '2')
             match('2');
-        else if (l == '3')
+        else if (it.current() == '3')
             match('3');
-        else if (l == '4')
+        else if (it.current() == '4')
             match('4');
-        else if (l == '5')
+        else if (it.current() == '5')
             match('5');
-        else if (l == '6')
+        else if (it.current() == '6')
             match('6');
-        else if (l == '7')
+        else if (it.current() == '7')
             match('7');
-        else if (l == '8')
+        else if (it.current() == '8')
             match('8');
-        else if (l == '9')
+        else if (it.current() == '9')
             match('9');
         else
             throw new ParseException("Syntax error", 0);
@@ -90,23 +91,16 @@ public class Parser {
     }
 
     static void end() throws ParseException {
-        if (l == '\n')
-            match('\n');
-        else if (l == '$')
-            match('$');
+        if (it.current() == CharacterIterator.DONE
+            || it.current() == '\n')
+            return;
         else
             throw new ParseException("Syntax error", 0);
     }
 
     static void match(char c) throws ParseException {
-        if (l == c) {
-            index++;
-            if (index <= input.length() - 1)
-                l = input.charAt(index);
-            else if (index == input.length())
-                ;// Last character
-            else
-                throw new ParseException("Syntax error", 0);
+        if (it.current() == c || it.current() != CharacterIterator.DONE) {
+            it.next();
         } else {
             throw new ParseException("Syntax error", 0);
         }

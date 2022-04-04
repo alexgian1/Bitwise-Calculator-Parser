@@ -19,6 +19,7 @@ public class Parser {
         exp();
         end();
         System.out.println("Out: " + input);
+        System.out.println("Parse successful");
     }
 
     static void exp() throws ParseException {
@@ -87,7 +88,6 @@ public class Parser {
             match('9');
         else
             throw new ParseException("Syntax error", 0);
-
     }
 
     static void end() throws ParseException {
